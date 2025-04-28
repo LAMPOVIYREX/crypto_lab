@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	// Парсинг аргументов командной строки
+
 	encrypt := flag.Bool("encrypt", false, "Режим шифрования")
 	decrypt := flag.Bool("decrypt", false, "Режим расшифрования")
 	input := flag.String("input", "", "Входной файл или каталог")
@@ -23,10 +23,8 @@ func main() {
 	verbose := flag.Bool("verbose", false, "Подробный вывод")
 	flag.Parse()
 
-	// Настройка логгера
 	logger := log.New(os.Stdout, "", log.LstdFlags)
 
-	// Валидация аргументов
 	if (*encrypt && *decrypt) || (!*encrypt && !*decrypt) {
 		logger.Fatal("Необходимо указать либо -encrypt, либо -decrypt")
 	}
@@ -37,16 +35,13 @@ func main() {
 		logger.Fatal("Необходимо указать парольную фразу (-passphrase)")
 	}
 
-	// Проверка существования входного файла/каталога
 	if _, err := os.Stat(*input); os.IsNotExist(err) {
 		logger.Fatalf("Входной путь не существует: %s", *input)
 	}
 
-	// Инициализация криптосистемы
 	crypto := cipher.NewCryptoSystem(*verbose, logger)
 
-	// Генерация ключа
-	salt := []byte("fixed-salt") // Фиксированная соль для упрощения
+	salt := []byte("fixed-salt")
 	key := cipher.GenerateKeyFromPassphrase(*passphrase, salt)
 
 	if *verbose {
@@ -56,13 +51,12 @@ func main() {
 
 	startTime := time.Now()
 
-	// Обработка в зависимости от режима
 	var err error
 	if *encrypt {
 		err = process(*input, *output, fileutils.EncryptFile, crypto, key, *verbose, logger)
 	} else {
 		err = process(*input, *output, fileutils.DecryptFile, crypto, key, *verbose, logger)
-		// Создаем файл с дешифрованным текстом
+
 		if err == nil && *output != "" {
 			createDecryptedTextFile(*output, logger, *verbose)
 		}
@@ -77,7 +71,6 @@ func main() {
 	}
 }
 
-// Создает файл с дешифрованным текстом
 func createDecryptedTextFile(outputPath string, logger *log.Logger, verbose bool) {
 	content, err := ioutil.ReadFile(outputPath)
 	if err != nil {
@@ -103,7 +96,7 @@ func process(input, output string,
 	}
 
 	if info.IsDir() {
-		// Обработка каталога
+
 		return filepath.Walk(input, func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
@@ -129,7 +122,6 @@ func process(input, output string,
 		})
 	}
 
-	// Обработка одиночного файла
 	if output == "" {
 		if strings.HasSuffix(input, ".enc") {
 			output = strings.TrimSuffix(input, ".enc")
