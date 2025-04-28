@@ -21,7 +21,6 @@ func NewCryptoSystem(verbose bool, logger *log.Logger) *CryptoSystem {
 	return &CryptoSystem{verbose, logger}
 }
 
-// Изменено с GenerateKey на GenerateKeyFromPassphrase
 func GenerateKeyFromPassphrase(passphrase string, salt []byte) []byte {
 	hash := sha512.New()
 	hash.Write([]byte(passphrase))
