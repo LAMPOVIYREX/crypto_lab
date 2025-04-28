@@ -1,0 +1,20 @@
+WORK=/tmp/go-build275688983
+crypto_lab/internal/cipher
+mkdir -p $WORK/b002/
+cat >$WORK/b002/importcfg << 'EOF' # internal
+# import config
+packagefile bytes=/usr/lib/go-1.13/pkg/linux_amd64/bytes.a
+packagefile crypto/rand=/usr/lib/go-1.13/pkg/linux_amd64/crypto/rand.a
+packagefile crypto/sha512=/usr/lib/go-1.13/pkg/linux_amd64/crypto/sha512.a
+packagefile encoding/binary=/usr/lib/go-1.13/pkg/linux_amd64/encoding/binary.a
+packagefile errors=/usr/lib/go-1.13/pkg/linux_amd64/errors.a
+packagefile log=/usr/lib/go-1.13/pkg/linux_amd64/log.a
+EOF
+cd /home/ivanu228/desktop/crypto_lab/internal/cipher
+/usr/lib/go-1.13/pkg/tool/linux_amd64/compile -o $WORK/b002/_pkg_.a -trimpath "$WORK/b002=>" -p crypto_lab/internal/cipher -complete -buildid nlUPVWWQoi-Vds35ADil/nlUPVWWQoi-Vds35ADil -goversion go1.13.8 -D "" -importcfg $WORK/b002/importcfg -pack -c=4 ./cipher.go ./keygen.go ./utils.go
+# crypto_lab/internal/cipher
+internal/cipher/cipher.go:104:2: undefined: "crypto/rand".Seed
+internal/cipher/cipher.go:105:10: undefined: "crypto/rand".Perm
+internal/cipher/cipher.go:120:2: undefined: "crypto/rand".Seed
+internal/cipher/cipher.go:121:10: undefined: "crypto/rand".Perm
+note: module requires Go 1.24.2
