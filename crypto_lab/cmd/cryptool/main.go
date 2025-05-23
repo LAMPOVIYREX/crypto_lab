@@ -9,12 +9,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/LAMPOVIYREX/crypto_lab/internal/cipher"
-	"github.com/LAMPOVIYREX/crypto_lab/internal/fileutils"
+	"crypto_lab/internal/cipher"
+	"crypto_lab/internal/fileutils"
 )
 
 func main() {
-
+	// определение флагов командной строки
 	encrypt := flag.Bool("encrypt", false, "Режим шифрования")
 	decrypt := flag.Bool("decrypt", false, "Режим расшифрования")
 	input := flag.String("input", "", "Входной файл или каталог")
@@ -22,7 +22,7 @@ func main() {
 	passphrase := flag.String("passphrase", "", "Парольная фраза")
 	verbose := flag.Bool("verbose", false, "Подробный вывод")
 	flag.Parse()
-
+	//логгер для вывода информации
 	logger := log.New(os.Stdout, "", log.LstdFlags)
 
 	if (*encrypt && *decrypt) || (!*encrypt && !*decrypt) {
@@ -39,18 +39,15 @@ func main() {
 		logger.Fatalf("Входной путь не существует: %s", *input)
 	}
 
+	// Создание экземпляра криптосистемы
 	crypto := cipher.NewCryptoSystem(*verbose, logger)
 
+	// генерируем ключ
 	salt := []byte("fixed-salt")
 	key := cipher.GenerateKeyFromPassphrase(*passphrase, salt)
 
-	if *verbose {
-		logger.Println("Ключ шифрования сгенерирован")
-		logger.Printf("Длина ключа: %d байт\n", len(key))
-	}
-
+	//выполнение шифрования или расшифровки
 	startTime := time.Now()
-
 	var err error
 	if *encrypt {
 		err = process(*input, *output, fileutils.EncryptFile, crypto, key, *verbose, logger)
@@ -62,6 +59,7 @@ func main() {
 		}
 	}
 
+	//обработка ошибок
 	if err != nil {
 		logger.Fatalf("Ошибка операции: %v", err)
 	}
@@ -86,6 +84,7 @@ func createDecryptedTextFile(outputPath string, logger *log.Logger, verbose bool
 	}
 }
 
+// рекурсивная обработка файлов и каталогов
 func process(input, output string,
 	opFunc func(string, string, *cipher.CryptoSystem, []byte, bool, *log.Logger) error,
 	crypto *cipher.CryptoSystem, key []byte, verbose bool, logger *log.Logger) error {
@@ -122,11 +121,12 @@ func process(input, output string,
 		})
 	}
 
+	// Если входной путь — файл, определяем выходной путь
 	if output == "" {
 		if strings.HasSuffix(input, ".enc") {
-			output = strings.TrimSuffix(input, ".enc")
+			output = strings.TrimSuffix(input, ".enc") // Расшифровка
 		} else {
-			output = input + ".enc"
+			output = input + ".enc" // Шифрование
 		}
 	}
 
