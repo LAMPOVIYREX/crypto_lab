@@ -1,3 +1,3 @@
-module github.com/ivanu228/crypto_lab
+module crypto_lab
 
-go 1.13
+go 1.22.2
